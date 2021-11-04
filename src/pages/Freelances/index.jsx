@@ -5,6 +5,7 @@ import colors from '../../utils/style/colors'
 import { Loader } from '../../utils/style/Atoms'
 import { useSelector } from 'react-redux'
 import { selectTheme } from '../../utils/selectors'
+import { useEffect } from 'react'
 import { useFetch } from '../../utils/hooks'
 
 const CardsContainer = styled.div`
@@ -44,6 +45,11 @@ function Freelances() {
   )
 
   const freelancersList = data?.freelancersList
+  const store = useStore()
+
+  useEffect(() => {
+    fetchOrUpdateFeelances(store)
+  }, [store])
 
   if (error) {
     return <span>Il y a un problème</span>
