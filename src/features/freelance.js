@@ -1,3 +1,4 @@
+import { createAction } from "@reduxjs/toolkit"
 import produce from "immer"
 import { selectFreelance } from "../utils/selectors"
 
@@ -7,24 +8,24 @@ const initialState = {
     // 3: { status: 'void' }
 }
 
-// variables actions type
-const FETCHING = 'freelance/fetching'
-const RESOLVED = 'freelance/resolved'
-const REJECTED = 'freelance/rejected'
-
 // action creator
-const freelanceFetching = (freelanceId) => ({ 
-    type: FETCHING,
-    payload: { freelanceId }
-});
-const freelanceResolved = (freelanceId, data) => ({ 
-    type: RESOLVED,
-    payload: { freelanceId, data }
-});
-const freelanceRejected = (freelanceId, error) => ({ 
-    type: REJECTED,
-    payload: { freelanceId, error }
-});
+const freelanceFetching = createAction('freelance/fetching', (freelanceId) => {
+    return {
+        payload: { freelanceId }
+    }
+})
+
+const freelanceResolved = createAction('freelance/resolved', (freelanceId, data) => {
+    return {
+        payload: { freelanceId, data }
+    }
+})
+
+const freelanceRejected = createAction('freelance/rejected', (freelanceId, error) => {
+    return {
+        payload: { freelanceId, error }
+    }
+})
 
 // async/await function
 export async function fetchOrUpdateFreelance(store, freelanceId){
@@ -50,7 +51,10 @@ export default function freelanceReducer(state = initialState, action){
     const { type, payload } = action
     return produce(state, draft => {
         // si l'action est une des action de freelance
-        if (type === RESOLVED || type === FETCHING || type === REJECTED) {
+        if (type === freelanceResolved.toString() || 
+        type === freelanceFetching.toString() || 
+        type === freelanceRejected.toString()
+        ) {
             // on vérifie que le state contient la propriété correspondante à l'Id du freelance
             if (draft[payload.freelanceId] === undefined) {
             // si elle n'existe pas, on l'initialise avec void
@@ -59,7 +63,7 @@ export default function freelanceReducer(state = initialState, action){
         }
         switch(type) {
             // request isLoading
-            case FETCHING: {
+            case freelanceFetching.toString(): {
                 if (draft[payload.freelanceId].status === 'void') {
                     draft[payload.freelanceId].status = 'pending'
                     return
@@ -76,7 +80,7 @@ export default function freelanceReducer(state = initialState, action){
                 return
             }
             // request return data
-            case RESOLVED: {
+            case freelanceResolved.toString(): {
                 if (
                     draft[payload.freelanceId].status === 'pending' || 
                     draft[payload.freelanceId].status === 'updating'
@@ -88,7 +92,7 @@ export default function freelanceReducer(state = initialState, action){
                 return
             }
             // request has error
-            case REJECTED: {
+            case freelanceRejected.toString(): {
                 if (
                     draft[payload.freelanceId].status === 'pending' || 
                     draft[payload.freelanceId].status === 'updating'

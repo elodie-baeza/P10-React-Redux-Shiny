@@ -1,22 +1,18 @@
-// variables
-const TOGGLE_THEME = 'theme/toggle'
-const SET_THEME = 'theme/set'
+import { createAction } from "@reduxjs/toolkit"
 
 // actions creator
-export const toggleTheme = () => ({ type: TOGGLE_THEME })
+export const toggleTheme = createAction('theme/toggle')
 
-export const setTheme = (theme = 'light') => ({
-    type: SET_THEME,
-    payload: theme,
-})
+export const setTheme = createAction('theme/set')
+setTheme('light')
 
 // reducer
 // on utilise une valeur par défaut pour donner le state initial
 export default function themeReducer(state = 'lignt', action){
-    if (action.type === TOGGLE_THEME){
+    if (action.type === toggleTheme.toString()){
         return state === 'light' ? 'dark' : 'light'
     }
-    if (action.type === SET_THEME){
+    if (action.type === setTheme.toString()){
         return action.payload
     }
     return state

@@ -1,3 +1,4 @@
+import { createAction } from "@reduxjs/toolkit"
 import produce from "immer"
 import { selectSurvey } from "../utils/selectors"
 
@@ -7,15 +8,18 @@ const initialState = {
     error: null,
 }
 
-// variables pour les actions types
-const FETCHING = 'survey/fetching'
-const RESOLVED = 'survey/resolved'
-const REJECTED = 'survey/rejected'
-
 // actions creators
-const surveyFetching = () => ({ type: FETCHING });
-const surveyResolved = (data) => ({ type: RESOLVED, payload: data });
-const surveyRejected = (error) => ({ type: REJECTED, payload: error });
+const surveyFetching = createAction('survey/fetching');
+const surveyResolved = createAction('survey/resolved', (data) => {
+    return{
+        payload: data 
+    }
+}) ;
+const surveyRejected = createAction('survey/rejected', (error) => {
+    return{
+        payload: error
+    }
+}) ;
 
 export async function fetchOrUpdateSurvey(store) {
     const status = selectSurvey(store.getState()).status;
@@ -37,7 +41,7 @@ export default function surveyReducer(state = initialState, action) {
     return produce(state, draft => {
         switch(action.type) {
             // request isLoading
-            case FETCHING: {
+            case surveyFetching.toString(): {
                 if (draft.status === 'void') {
                     draft.status = 'pending'
                     return
@@ -54,7 +58,7 @@ export default function surveyReducer(state = initialState, action) {
                 return
             }
             // request return data
-            case RESOLVED: {
+            case surveyResolved.toString(): {
                 if (draft.status === 'pending' || draft.status === 'updating') {
                     draft.data = action.payload
                     draft.status = 'resolved'
@@ -63,7 +67,7 @@ export default function surveyReducer(state = initialState, action) {
                 return
             }
             // request has error
-            case REJECTED: {
+            case surveyRejected.toString(): {
                 if (draft.status === 'pending' || draft.status === 'updating') {
                     draft.error = action.payload
                     draft.data = null

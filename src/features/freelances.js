@@ -1,3 +1,4 @@
+import { createAction } from "@reduxjs/toolkit"
 import produce from "immer"
 import { selectFreelances } from "../utils/selectors"
 
@@ -7,15 +8,18 @@ const initialState = {
     error: null,
 }
 
-// variables pour les actions types
-const FETCHING = 'freelances/fetching'
-const RESOLVED = 'freelances/resolved'
-const REJECTED = 'freelances/rejected'
-
 // actions creators
-const freelancesFetching = () => ({ type: FETCHING });
-const freelancesResolved = (data) => ({ type: RESOLVED, payload: data });
-const freelancesRejected = (error) => ({ type: REJECTED, payload: error });
+const freelancesFetching = createAction('freelances/fetching');
+const freelancesResolved = createAction('freelances/resolved', (data) => {
+    return {
+        payload: data
+    }
+});
+const freelancesRejected = createAction('freelances/rejected', (error) => {
+    return {
+        payload: error
+    }
+});
 
 export async function fetchOrUpdateFreelances(store) {
     const status = selectFreelances(store.getState()).status;
@@ -37,7 +41,7 @@ export default function freelancesReducer(state = initialState, action) {
     return produce(state, draft => {
         switch(action.type) {
             // request isLoading
-            case FETCHING: {
+            case freelancesFetching.toString(): {
                 if (draft.status === 'void') {
                     draft.status = 'pending'
                     return
@@ -54,7 +58,7 @@ export default function freelancesReducer(state = initialState, action) {
                 return
             }
             // request return data
-            case RESOLVED: {
+            case freelancesResolved.toString(): {
                 if (draft.status === 'pending' || draft.status === 'updating') {
                     draft.data = action.payload
                     draft.status = 'resolved'
@@ -63,7 +67,7 @@ export default function freelancesReducer(state = initialState, action) {
                 return
             }
             // request has error
-            case REJECTED: {
+            case freelancesRejected.toString(): {
                 if (draft.status === 'pending' || draft.status === 'updating') {
                     draft.error = action.payload
                     draft.data = null
