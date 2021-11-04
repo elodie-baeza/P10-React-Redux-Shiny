@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import Card from '../../components/Card'
 import colors from '../../utils/style/colors'
 import { Loader } from '../../utils/style/Atoms'
-import { useSelector } from 'react-redux'
-import { selectTheme } from '../../utils/selectors'
+import { useSelector, useStore } from 'react-redux'
+import { selectFreelances, selectTheme } from '../../utils/selectors'
+import { fetchOrUpdateFeelances } from '../../features/freelances'
 import { useEffect } from 'react'
-import { useFetch } from '../../utils/hooks'
 
 const CardsContainer = styled.div`
   display: grid;
@@ -40,20 +40,23 @@ const LoaderWrapper = styled.div`
 
 function Freelances() {
   const theme = useSelector(selectTheme)
-  const { data, isLoading, error } = useFetch(
-    `http://localhost:8000/freelances`
-  )
 
-  const freelancersList = data?.freelancersList
+  const freelances = useSelector(selectFreelances)
+
+  const freelancersList = freelances.data?.freelancersList
+
   const store = useStore()
 
   useEffect(() => {
     fetchOrUpdateFeelances(store)
   }, [store])
 
-  if (error) {
+  if (freelances.status === 'rejected') {
     return <span>Il y a un problème</span>
   }
+
+  const isLoading =
+    freelances.status === 'void' || freelances.status === 'pending'
 
   return (
     <div>
