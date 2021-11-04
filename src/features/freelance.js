@@ -1,4 +1,4 @@
-import { createAction } from "@reduxjs/toolkit"
+import { createAction, createReducer } from "@reduxjs/toolkit"
 import produce from "immer"
 import { selectFreelance } from "../utils/selectors"
 
@@ -46,65 +46,56 @@ export async function fetchOrUpdateFreelance(store, freelanceId){
     }
 }
 
-// reducer
-export default function freelanceReducer(state = initialState, action){
-    const { type, payload } = action
-    return produce(state, draft => {
-        // si l'action est une des action de freelance
-        if (type === freelanceResolved.toString() || 
-        type === freelanceFetching.toString() || 
-        type === freelanceRejected.toString()
-        ) {
-            // on vérifie que le state contient la propriété correspondante à l'Id du freelance
-            if (draft[payload.freelanceId] === undefined) {
-            // si elle n'existe pas, on l'initialise avec void
-            draft[payload.freelanceId] = { status: 'void' }
-            }
-        }
-        switch(type) {
-            // request isLoading
-            case freelanceFetching.toString(): {
-                if (draft[payload.freelanceId].status === 'void') {
-                    draft[payload.freelanceId].status = 'pending'
-                    return
-                }
-                if (draft[payload.freelanceId].status === 'rejected') {
-                    draft[payload.freelanceId].error = null
-                    draft[payload.freelanceId].status = 'pending'
-                    return
-                }
-                if (draft[payload.freelanceId].status === 'resolved') {
-                    draft[payload.freelanceId].status = 'updating'
-                    return
-                }
-                return
-            }
-            // request return data
-            case freelanceResolved.toString(): {
-                if (
-                    draft[payload.freelanceId].status === 'pending' || 
-                    draft[payload.freelanceId].status === 'updating'
-                    ) {
-                    draft[payload.freelanceId].data = payload.data
-                    draft[payload.freelanceId].status = 'resolved'
-                    return
-                }
-                return
-            }
-            // request has error
-            case freelanceRejected.toString(): {
-                if (
-                    draft[payload.freelanceId].status === 'pending' || 
-                    draft[payload.freelanceId].status === 'updating'
-                    ) {
-                    draft[payload.freelanceId].error = payload.error
-                    draft[payload.freelanceId].data = null
-                    draft[payload.freelanceId].status = 'rejected'
-                    return
-                }
-                return
-            }
-            default: return;
-        }
-    })
+function setVoidIfUndefined(draft, freelanceId){
+    // on vérifie que le state contient la propriété correspondante à l'Id du freelance
+    if (draft[freelanceId] === undefined) {
+        // si elle n'existe pas, on l'initialise avec void
+        draft[freelanceId] = { status: 'void' }
+        }        
 }
+
+// reducer
+export default createReducer(initialState, builder => builder
+    .addCase(freelanceFetching, (draft, action) => {
+        setVoidIfUndefined(draft, action.payload.freelanceId)
+        if (draft[action.payload.freelanceId].status === 'void') {
+            draft[action.payload.freelanceId].status = 'pending'
+            return
+        }
+        if (draft[action.payload.freelanceId].status === 'rejected') {
+            draft[action.payload.freelanceId].error = null
+            draft[action.payload.freelanceId].status = 'pending'
+            return
+        }
+        if (draft[action.payload.freelanceId].status === 'resolved') {
+            draft[action.payload.freelanceId].status = 'updating'
+            return
+        }
+        return
+    })
+    .addCase(freelanceResolved, (draft, action) => {
+        setVoidIfUndefined(draft, action.payload.freelanceId)
+        if (
+            draft[action.payload.freelanceId].status === 'pending' || 
+            draft[action.payload.freelanceId].status === 'updating'
+            ) {
+            draft[action.payload.freelanceId].data = action.payload.data
+            draft[action.payload.freelanceId].status = 'resolved'
+            return
+        }
+        return
+    })
+    .addCase(freelanceRejected, (draft, action) => {
+        setVoidIfUndefined(draft, action.payload.freelanceId)
+        if (
+            draft[action.payload.freelanceId].status === 'pending' || 
+            draft[action.payload.freelanceId].status === 'updating'
+            ) {
+            draft[action.payload.freelanceId].error = action.payload.error
+            draft[action.payload.freelanceId].data = null
+            draft[action.payload.freelanceId].status = 'rejected'
+            return
+        }
+        return
+    })
+)

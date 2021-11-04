@@ -1,5 +1,4 @@
-import { createAction } from "@reduxjs/toolkit"
-import produce from "immer"
+import { createAction, createReducer } from "@reduxjs/toolkit"
 import { selectFreelances } from "../utils/selectors"
 
 const initialState = {
@@ -37,46 +36,38 @@ export async function fetchOrUpdateFreelances(store) {
 }
 
 // reducer
-export default function freelancesReducer(state = initialState, action) {
-    return produce(state, draft => {
-        switch(action.type) {
-            // request isLoading
-            case freelancesFetching.toString(): {
-                if (draft.status === 'void') {
-                    draft.status = 'pending'
-                    return
-                }
-                if (draft.status === 'rejected') {
-                    draft.error = null
-                    draft.status = 'pending'
-                    return
-                }
-                if (draft.status === 'resolved') {
-                    draft.status = 'updating'
-                    return
-                }
-                return
-            }
-            // request return data
-            case freelancesResolved.toString(): {
-                if (draft.status === 'pending' || draft.status === 'updating') {
-                    draft.data = action.payload
-                    draft.status = 'resolved'
-                    return
-                }
-                return
-            }
-            // request has error
-            case freelancesRejected.toString(): {
-                if (draft.status === 'pending' || draft.status === 'updating') {
-                    draft.error = action.payload
-                    draft.data = null
-                    draft.status = 'rejected'
-                    return
-                }
-                return
-            }
-            default: return;
+export default createReducer(initialState, builder => builder
+    .addCase(freelancesFetching, (draft, action) => {
+        if (draft.status === 'void') {
+            draft.status = 'pending'
+            return
         }
+        if (draft.status === 'rejected') {
+            draft.error = null
+            draft.status = 'pending'
+            return
+        }
+        if (draft.status === 'resolved') {
+            draft.status = 'updating'
+            return
+        }
+        return
     })
-}
+    .addCase(freelancesResolved, (draft, action) => {
+        if (draft.status === 'pending' || draft.status === 'updating') {
+            draft.data = action.payload
+            draft.status = 'resolved'
+            return
+        }
+        return
+    })
+    .addCase(freelancesRejected, (draft, action) => {
+        if (draft.status === 'pending' || draft.status === 'updating') {
+            draft.error = action.payload
+            draft.data = null
+            draft.status = 'rejected'
+            return
+        }
+        return
+    })
+)
