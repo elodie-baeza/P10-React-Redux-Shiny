@@ -1,4 +1,5 @@
 import { combineReducers, createStore } from "redux";
+import freelancesReducer from "../features/freelances";
 import themeReducer from "../features/theme";
 
 // on utilise combineReducer pour faire
@@ -6,6 +7,7 @@ import themeReducer from "../features/theme";
 const reducer = combineReducers({
     // le themeReducer est responsable de la propriété `theme` du state
     theme: themeReducer,
+    freelances: freelancesReducer,
 })
 
 // Pour connecter les Redux Devtools on utilise
