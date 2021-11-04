@@ -3,6 +3,7 @@ import freelanceReducer from "../features/freelance";
 import freelancesReducer from "../features/freelances";
 import surveyReducer from "../features/survey";
 import themeReducer from "../features/theme";
+import resultsReducer from "../features/results";
 
 const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
         freelances: freelancesReducer,
         survey: surveyReducer,
         freelance: freelanceReducer,
+        results: resultsReducer,
     }
 })
 
