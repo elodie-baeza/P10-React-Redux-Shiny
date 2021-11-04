@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import { useParams } from 'react-router-dom'
 import colors from '../../utils/style/colors'
 import { fetchOrUpdateFreelance } from '../../features/freelance'
-import { useStore } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { selectFreelance, selectTheme } from '../../utils/selectors'
+import { useDispatch } from 'react-redux'
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -93,11 +93,12 @@ const Availability = styled.span`
 function Profile() {
   const theme = useSelector(selectTheme)
   const { id: freelanceId } = useParams()
-  const store = useStore()
+  
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    fetchOrUpdateFreelance(store, freelanceId)
-  }, [store, freelanceId])
+    dispatch(fetchOrUpdateFreelance(freelanceId))
+  }, [dispatch, freelanceId])
 
   const freelance = useSelector(selectFreelance(freelanceId))
 

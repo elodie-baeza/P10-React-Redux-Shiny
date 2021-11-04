@@ -8,7 +8,7 @@ import { SurveyContext } from '../../utils/context'
 import { useSelector } from 'react-redux'
 import { selectSurvey, selectTheme } from '../../utils/selectors'
 import { fetchOrUpdateSurvey } from '../../features/survey'
-import { useStore } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 const SurveyContainer = styled.div`
   display: flex;
@@ -79,10 +79,10 @@ function Survey() {
   }
 
   const survey = useSelector(selectSurvey)
-  const store = useStore()
+  const dispatch = useDispatch()
   useEffect(() => {
-    fetchOrUpdateSurvey(store)
-  },[store])
+    dispatch(fetchOrUpdateSurvey)
+  },[dispatch])
 
   const surveyData = survey.data?.surveyData
   

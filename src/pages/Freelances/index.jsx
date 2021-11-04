@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 import Card from '../../components/Card'
 import colors from '../../utils/style/colors'
 import { Loader } from '../../utils/style/Atoms'
-import { useSelector, useStore } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { selectFreelances, selectTheme } from '../../utils/selectors'
 import { fetchOrUpdateFreelances } from '../../features/freelances'
 import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 
 const CardsContainer = styled.div`
   display: grid;
@@ -45,11 +46,11 @@ function Freelances() {
 
   const freelancersList = freelances.data?.freelancersList
 
-  const store = useStore()
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    fetchOrUpdateFreelances(store)
-  }, [store])
+    dispatch(fetchOrUpdateFreelances)
+  }, [dispatch])
 
   if (freelances.status === 'rejected') {
     return <span>Il y a un problème</span>
