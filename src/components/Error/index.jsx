@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 import colors from '../../utils/style/colors'
-import { useTheme } from '../../utils/hooks'
 import ErrorIllustration from '../../assets/404.svg'
+import { useSelector } from 'react-redux'
+import { selectTheme } from '../../utils/selectors'
 
 const ErrorWrapper = styled.div`
   margin: 30px;
@@ -27,8 +28,8 @@ const Illustration = styled.img`
 `
 
 function Error() {
-  const { theme } = useTheme()
-
+  const theme = useSelector(selectTheme)
+  
   return (
     <ErrorWrapper theme={theme}>
       <ErrorTitle theme={theme}>Oups...</ErrorTitle>

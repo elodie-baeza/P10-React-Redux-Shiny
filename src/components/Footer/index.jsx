@@ -22,8 +22,8 @@ const NightModeButton = styled.button`
 `
 
 function Footer() {
-  const dispatch = useDispatch()
   const theme = useSelector(selectTheme)
+  const dispatch = useDispatch()
 
   return (
     <FooterContainer>

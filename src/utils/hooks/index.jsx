@@ -25,8 +25,3 @@ export function useFetch(url) {
   }, [url])
   return { isLoading, data, error }
 }
-
-export function useTheme() {
-  const { theme, toggleTheme } = useContext(ThemeContext)
-  return { theme, toggleTheme }
-}
