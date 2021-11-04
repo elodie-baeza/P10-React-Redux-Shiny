@@ -17,7 +17,7 @@ const freelancesFetching = () => ({ type: FETCHING });
 const freelancesResolved = (data) => ({ type: RESOLVED, payload: data });
 const freelancesRejected = (error) => ({ type: REJECTED, payload: error });
 
-export async function fetchOrUpdateFeelances(store) {
+export async function fetchOrUpdateFreelances(store) {
     const status = selectFreelances(store.getState()).status;
     if (status === 'pending' || status === 'updating'){
         return;

@@ -5,7 +5,7 @@ import colors from '../../utils/style/colors'
 import { Loader } from '../../utils/style/Atoms'
 import { useSelector, useStore } from 'react-redux'
 import { selectFreelances, selectTheme } from '../../utils/selectors'
-import { fetchOrUpdateFeelances } from '../../features/freelances'
+import { fetchOrUpdateFreelances } from '../../features/freelances'
 import { useEffect } from 'react'
 
 const CardsContainer = styled.div`
@@ -48,7 +48,7 @@ function Freelances() {
   const store = useStore()
 
   useEffect(() => {
-    fetchOrUpdateFeelances(store)
+    fetchOrUpdateFreelances(store)
   }, [store])
 
   if (freelances.status === 'rejected') {
